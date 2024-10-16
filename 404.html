@@ -7,19 +7,29 @@
 </head>
 <body>
     <script>
-        // Obtém a URL encurtada da barra de endereços
-        const path = window.location.pathname.substring(1);
-        const links = {
-            "meulink1": "https://exemplo.com/original",
-            "github": "https://github.com"
-        };
+        const repo = 'vontadinha/instagram'; // Substitua com seu repositório
+        const path = window.location.pathname.substring(1); // Remove a barra inicial "/"
 
-        // Se o link existe, redireciona
-        if (links[path]) {
-            window.location.href = links[path];
-        } else {
-            document.body.innerHTML = "<h1>Link não encontrado!</h1>";
+        async function verificarIssue(id) {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repo}/issues?state=open`);
+                const issues = await response.json();
+
+                const issue = issues.find(issue => issue.title === id);
+
+                if (issue) {
+                    // Redireciona para o link original que está no corpo da issue
+                    window.location.href = issue.body.trim();
+                } else {
+                    document.body.innerHTML = "<h1>Link não encontrado!</h1><p>Verifique se o link está correto.</p>";
+                }
+            } catch (error) {
+                console.error('Erro ao buscar issue:', error);
+                document.body.innerHTML = "<h1>Erro ao processar o link!</h1>";
+            }
         }
+
+        verificarIssue(path); // Chama a função para verificar a issue com base no ID curto
     </script>
 </body>
 </html>
